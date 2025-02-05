@@ -1,22 +1,55 @@
 ---
 title: "Project_1_Statistical_computation"
+format: html
 ---
 
-## Quarto
-
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+Question 1 
 
 ```{r}
+#| echo: false
 airquality |> class()
 loop_length <- nrow(airquality)
-vec = numeric(6)
-df = data.frame()
-for (i in 1:loop_length){
-  vec = airquality[1:6,]
-  if (is.na(vec[1:6])){
-  }
-  else{
-    df[vec[1:6]]
+df <- data.frame()  
+for (i in 1:loop_length) {
+  row_vec <- airquality[i, ] 
+  if (!any(is.na(row_vec))) {
+    df <- rbind(df, row_vec)
   }
 }
+print(df)
+
+# there is a far more efficient way of doing this in one line 
+# df <- na.omit(airquality)  
+
+```
+
+
+Question 2
+
+```{r}
+# Note use DF otherwise it results in some values of NA
+avg_ozone <- mean(df$Ozone)
+sd_ozone <- sd(df$Ozone)
+min_ozone <- min(df$Ozone) 
+max_ozone <- max(df$Ozone)
+
+avg_temp <- mean(df$Temp)
+sd_temp <- sd(df$Temp)
+min_temp <- min(df$Temp) 
+max_temp <- max(df$Temp)
+
+```
+
+Question 3 and Question 4
+
+```{r}
+# Dist = Y, Speed = X
+speed_df = cbind(1, cars$speed)
+dist_df = matrix(cars$dist)
+
+# Calculating the estimates using the formula ((X^TX)^-1X^TY)
+beta_hat <- solve(t(speed_df) %*% speed_df) %*% t(speed_df) %*% dist_df
+
+# Calculating it using the built in R function
+cars_reg = lm(cars$dist~cars$speed)
 ```
