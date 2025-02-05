@@ -7,5 +7,16 @@ title: "Project_1_Statistical_computation"
 Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
 
 ```{r}
-1 + 1
+airquality |> class()
+loop_length <- nrow(airquality)
+vec = numeric(6)
+df = data.frame()
+for (i in 1:loop_length){
+  vec = airquality[1:6,]
+  if (is.na(vec[1:6])){
+  }
+  else{
+    df[vec[1:6]]
+  }
+}
 ```
