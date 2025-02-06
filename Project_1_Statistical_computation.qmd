@@ -3,9 +3,12 @@ title: "Project_1_Statistical_computation"
 format: html
 ---
 
-Question 1 
+`r library(knitr)`
 
-The rows that contain at least one NA value are as follows:
+# Question 1
+
+## The rows that contain at least one NA value are as follows:
+
 ```{r}
 #| echo: false
 loop_length <- nrow(airquality)
@@ -27,10 +30,10 @@ print(df_na_rows)
 
 ```
 
+# Question 2
 
-Question 2
+## The ozone and temperature metrics are as follows:
 
-The ozone and temperature metrics are as follows:
 ```{r}
 #| echo: false
 
@@ -52,13 +55,12 @@ final_weather_vec <- data.frame(
   Max = c(max_ozone, max_temp)
 )
 
-print(final_weather_vec)
+kable(final_weather_vec, caption = "The Ozone and Temperature metrcis summarized")
   
 
 ```
 
-Question 3 and Question 4
-
+# Question 3 and Question 4
 
 ```{r}
 #| echo: false
@@ -68,17 +70,26 @@ dist_df = matrix(cars$dist)
 
 # Calculating the estimates using the formula ((X^TX)^-1X^TY)
 beta_hat <- solve(t(speed_df) %*% speed_df) %*% t(speed_df) %*% dist_df
-print("Values using matrix multiplication")
-print(beta_hat)
+#print(c("Values using matrix multiplication: ", beta_hat))
 
 # Calculating it using the built in R function
 cars_reg = lm(cars$dist~cars$speed)
-print("Values using LM method")
-print(cars_reg)
+#print("Values using LM method")
+#print(cars_reg)
+
 ```
 
+The formula used for the matrix multiplication is: \begin{equation}
+  \hat{\beta} = (X^TX)^{-1}X^TY 
+\end{equation}
 
-Question 5 (Jake's additional question):
+The values using matrix multiplication are: `r beta_hat`
+
+The values using the built in LM function are: `r cars_reg$coefficients`
+
+# Question 5 (Jake's additional question):
+
+## The specific values from my LM function are:
 
 ```{r}
 #| echo: false
@@ -118,5 +129,51 @@ reg_df = data.frame(
                     T_stat = t_stat_func(beta_hat, std_err_func(speed_df, dist_df, beta_hat)),
                     P_value = p_val_func(t_stat_func(beta_hat, std_err_func(speed_df, dist_df, beta_hat)))
                     )
-print(reg_df)
+# print(reg_df)
+
+
+mylm <- function(x, y){
+  
+  # Estimates 
+  x_df = cbind(1, x)
+  y_df = matrix(y)
+  beta_hat <- solve(t(x_df) %*% x_df) %*% t(x_df) %*% y_df
+  
+  residuals <- y_df - x_df %*% beta_hat
+  
+  n <- length(y_df)
+  p <- ncol(x_df)  # Number of predictors including intercept
+  s <- sqrt(sum(residuals^2) / (n - p))
+
+  # Compute standard errors
+  var_beta <- s^2 * solve(t(x_df) %*% x_df)  # Variance-covariance matrix
+  se_beta <- sqrt(diag(var_beta))  # Standard errors
+  
+  # T stat
+  t_stat <- beta_hat/se_beta
+  
+  # p_value
+  # 2 sided since the test is if beta hat is equal to 0
+  deg_of_free = length(y_df) - 2 # number of observations less number of parameters less 1 (n-p-1)
+  p_value <- 2 * (1 - pt(abs(t_stat), deg_of_free))
+  
+  
+  
+  return(list('Estimate' = beta_hat, 
+              'std. Error' = se_beta,
+              't value' =  t_stat,
+              'Pr(>|t|)' = p_value)
+         )
+}
+
+a <- mylm(cars$speed, cars$dist)
+b <- data.frame(Estimate = a$Estimate,
+                Standard_Error = a$`std. Error`,
+                T_Value = a$`t value`,
+                Pvalue = a$`Pr(>|t|)`
+                )
+kable(b, caption = "Output from my LM function")
 ```
+
+
+
