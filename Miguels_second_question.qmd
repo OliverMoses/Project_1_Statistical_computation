@@ -21,6 +21,90 @@ if (!requireNamespace("nycflights13", quietly = TRUE)) {
 library(nycflights13)
 ```
 
+# Question 1
 ```{r}
+#| echo: false
 glimpse(flights)
+```
+# Question 2
+```{r}
+
+flights |> 
+  filter(month == 1) |> 
+    group_by(carrier) |> 
+      summarise(mean_distance = mean(distance, na.rm = TRUE), sd(distance, na.rm = TRUE)) |> 
+        arrange(mean_distance)
+```
+# Question 3
+
+```{r}
+#| echo: false
+flights |> 
+  select(carrier, month, distance) |> 
+    filter(month == 1 & carrier == 'OO')
+
+flights |> 
+  select(carrier, month, distance) |> 
+    filter(month == 1 & carrier == 'HA')
+
+```
+
+For carrier OO the standard deviation is NA because there is only one data entry, thus there is no deviation that can be determined therefore making it non applicable/NA. This is not the case however, for carriers such as YV, HA, etc. this is because all of their trips went the exact same distance and thus there was no deviation across the mean for the carriers.
+
+# Question 4
+
+```{r}
+flights |>  
+  filter(month == 1) |> 
+    group_by(carrier) |>  
+      summarise(mean_distance = mean(distance, na.rm = TRUE)) |> 
+  pivot_wider(names_from = carrier, values_from = mean_distance)
+```
+# Question 5
+
+```{r}
+late_early <-  flights |> 
+  filter(dep_delay > 0 & arr_delay <= 0) |> 
+  nrow()
+all_flights <- flights |> nrow()
+
+prop_late_early = late_early/all_flights
+```
+The Proportion of flights that leave late but still arrive early is `r prop_late_early`
+
+# Question 6
+
+```{r}
+
+#6.1
+flights |> 
+  group_by(origin, dest) |> 
+    summarise(
+      count_of_trips = n_distinct(carrier),
+      carriers =toString(unique(carrier)),
+      .groups = 'drop') |> 
+        filter(count_of_trips>1) |> 
+          arrange(count_of_trips)
+
+# 6.2
+
+multi_flight_group <- flights |> 
+  group_by(origin, dest) |> 
+    filter(n_distinct(carrier)>1)
+
+
+avg_delay_df <- multi_flight_group |> 
+  group_by(origin, dest, carrier) |> 
+    summarise(
+      avg_arrival_delay = mean(arr_delay, na.rm = TRUE),
+      .groups = 'drop') |> 
+        filter(!is.na(avg_arrival_delay)) |> 
+          arrange(origin, dest, avg_arrival_delay)
+
+# 6.3 
+avg_delay_df |>
+  
+  
+
+
 ```
