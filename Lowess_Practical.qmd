@@ -1,0 +1,64 @@
+---
+title: "Lowess_Practical"
+author: "Oliver Moses"
+format: html
+---
+
+```{r} 
+#| eval: false
+#setup
+set.seed(1)
+x <- 1:100
+e = rnorm(100,mean=0, sd = 0.2)
+y <- sin(x/10) + e
+y
+
+x_test = cbind(1, x)
+
+plot(y)
+new_y <- lowess(x, y, 0.2, iter = 0)
+plot(new_y)
+
+
+
+
+
+custom_lowess = function(x, y, f){
+  num_samples = ceiling(f * length(x))  # Value of k
+
+  smoothed_values = numeric(length(x))  # Ensuring i can access the smoothed values outside of the loop
+  
+  for (i in 1:length(x)) {
+    distances = abs(x - x[i])  # from the vector x subtract specifically the value at point i from every point and take the absolute value
+    
+    closest_indices = order(distances)[1:num_samples]  # This returns the indexes of the nearest neighbors
+    
+    # This next step ensures that the matrices are all conformable
+    
+    neighbors_x = x[closest_indices]  # Select x values of nearest neighbors
+    neighbors_y = y[closest_indices]  # Select y values of nearest neighbors
+    
+    max_dist = max(distances[closest_indices])  
+    
+    # Using the formula Jake gave calculate the distances before converting it into a diagonal matrix
+    w = ifelse(distances[closest_indices] > max_dist, 0, 
+               (1 - (abs(distances[closest_indices]) / max_dist)^3)^3)
+    
+    w_diag = diag(w) 
+    
+    x_df = cbind(1, neighbors_x)  # converting the x matrix into a design matrix
+    y_df = matrix(neighbors_y, ncol = 1)
+    
+    # Actual beta hat calculation
+    beta_hat <- solve(t(x_df) %*% w_diag %*% x_df) %*% t(x_df) %*% w_diag %*% y_df
+    
+    # Predict smoothed value at x[i]
+    smoothed_values[i] = beta_hat[1] + beta_hat[2] * x[i]  
+  }
+  
+  return(smoothed_values)
+}
+
+
+custom_lowess(x, y, 0.2)
+```

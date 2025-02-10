@@ -1,5 +1,17 @@
 project:
   title: "Project_1_Statistical_computation"
+  type: website
+  output-dir: _site
+  
+website: 
+  navbar: 
+    left:
+      - href: "Project_1_Statistical_computation.qmd"
+        text: Prac Day One
+      - href: "Miguels_second_question.qmd"
+        text: Prac Day Four
+      - href: "Lowess_Practical.qmd"
+        text: Prac Day Two/Three
 
 
 
