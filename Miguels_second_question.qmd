@@ -1,9 +1,12 @@
 ---
-title: "Miguels_Second_Question"
+title: "Practical Day Four"
 author: "Oliver Moses"
 format: html
 ---
 
+`r library(knitr)`
+
+# Installing all packages and dependencies
 ```{r} 
 #| echo: false
 
@@ -23,42 +26,48 @@ library(nycflights13)
 
 # Question 1
 ```{r}
-#| echo: false
+#| echo: true
 glimpse(flights)
 ```
 # Question 2
 ```{r}
 
-flights |> 
+q2 <- flights |> 
   filter(month == 1) |> 
     group_by(carrier) |> 
-      summarise(mean_distance = mean(distance, na.rm = TRUE), sd(distance, na.rm = TRUE)) |> 
+      summarise(mean_distance = mean(distance, na.rm = TRUE), 
+                standard_deviation_distance = sd(distance, na.rm = TRUE)
+                ) |> 
         arrange(mean_distance)
+kable(head(q2, 10))
 ```
 # Question 3
 
 ```{r}
 #| echo: false
-flights |> 
+na_std_dev <- flights |> 
   select(carrier, month, distance) |> 
     filter(month == 1 & carrier == 'OO')
+kable(na_std_dev)
 
-flights |> 
+na_const <- flights |> 
   select(carrier, month, distance) |> 
     filter(month == 1 & carrier == 'HA')
+kable(head(na_const, 10))
 
 ```
 
-For carrier OO the standard deviation is NA because there is only one data entry, thus there is no deviation that can be determined therefore making it non applicable/NA. This is not the case however, for carriers such as YV, HA, etc. this is because all of their trips went the exact same distance and thus there was no deviation across the mean for the carriers.
+For carrier OO the standard deviation is NA because there is only one data entry, thus there is no deviation that can be determined therefore making it non applicable/NA. This is not the case however, for carriers such as YV, HA, etc. this is because all of their trips went the exact same distance and thus there was no deviation across the mean for the carriers, thus leaving it as the same value as the mean.
 
 # Question 4
 
 ```{r}
-flights |>  
+flipped_df <- flights |>  
   filter(month == 1) |> 
     group_by(carrier) |>  
       summarise(mean_distance = mean(distance, na.rm = TRUE)) |> 
   pivot_wider(names_from = carrier, values_from = mean_distance)
+kable(flipped_df)
 ```
 # Question 5
 
@@ -77,7 +86,7 @@ The Proportion of flights that leave late but still arrive early is `r prop_late
 ```{r}
 
 #6.1
-flights |> 
+first_part <- flights |> 
   group_by(origin, dest) |> 
     summarise(
       count_of_trips = n_distinct(carrier),
@@ -85,7 +94,7 @@ flights |>
       .groups = 'drop') |> 
         filter(count_of_trips>1) |> 
           arrange(count_of_trips)
-
+kable(head(first_part, 10))
 # 6.2
 
 multi_flight_group <- flights |> 
@@ -101,15 +110,19 @@ avg_delay_df <- multi_flight_group |>
         filter(!is.na(avg_arrival_delay)) |> 
           arrange(origin, dest, avg_arrival_delay)
 
+avg_delay_df <- avg_delay_df |> inner_join(airlines, by = 'carrier')
+kable(head(avg_delay_df, 10))
+
 # 6.3 
 
-avg_delay_df |> 
+q6 <- avg_delay_df |> 
   group_by(origin, dest) |> 
     summarise(
       best_airline = carrier[which.min(avg_arrival_delay)],
       worst_airlines = carrier[which.max(avg_arrival_delay)],
       .groups = 'drop'
     ) 
+kable(head(q6, 10))
 
 # 6.4
 
@@ -125,12 +138,12 @@ route_performance <- avg_delay_df |>
       .groups = 'drop'
     )
 
-airlines
 worst_route <- route_performance |> 
   arrange(desc(delay_diff)) |>
     slice(1)  
 
-worst_route 
+kable(worst_route)
+
 # The worst route is thus JFK to ATL performed by carrier 9E
 
 # 6.5
@@ -138,8 +151,8 @@ worst_route
 ```
 # Question 7
 
-```{r}
-q7= dput(structure(list(id = c("id_1", "id_2", "id_3", "id_4", "id_5", 
+```{r echo=FALSE}
+q7 <-  structure(list(id = c("id_1", "id_2", "id_3", "id_4", "id_5", 
 "id_6", "id_7", "id_8", "id_9", "id_10", "id_11", "id_12", "id_13", 
 "id_14", "id_15", "id_16", "id_17", "id_18", "id_19", "id_20", 
 "id_21", "id_22", "id_23", "id_24", "id_25", "id_26", "id_27", 
@@ -235,10 +248,10 @@ NA, 77, 80, 115, 85, 88, 109, NA, 71, 90, 94, 91, 87, 113, 93,
     "widowed", "widowed", "married", "widowed", "divorced", "married", 
     "married", "divorced", "single", "married", "widowed", "divorced", 
     "divorced", "single", "divorced")), row.names = c(NA, -50L
-), class = c("tbl_df", "tbl", "data.frame")))
+), class = c("tbl_df", "tbl", "data.frame"))
+
+```
+```{r}
 UtilsDataRSV::view_cols(q7) 
-
-
-
 ```
 There are a few errors in the data set. In gender there is female and femal, these would need to be combined. Height contains an NA value which is incorrect. diease_status contains Healthy and healthy, these should be combined.

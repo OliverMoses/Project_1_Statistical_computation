@@ -1,0 +1,13 @@
+---
+title: "Landing Page"
+author: "Oliver Moses"
+format: html
+---
+
+
+## Good day and welcome to my first statistical computation practical. I hope you enjoy it :) 
+
+## Here is the link to my github repository
+https://github.com/OliverMoses/Project_1_Statistical_computation
+
+## Note for all of my tables I have limited the display to only 10 rows at a time

@@ -1,5 +1,5 @@
 ---
-title: "Lowess_Practical"
+title: "Practical Day Two/Three"
 author: "Oliver Moses"
 format: html
 ---
@@ -8,6 +8,7 @@ format: html
 #| echo: true
 
 # setup
+library(ggplot2)
 set.seed(1)
 x <- 1:100
 e = rnorm(100,mean=0, sd = 0.2)
@@ -50,6 +51,24 @@ custom_lowess = function(x, y, f){
   return(smoothed_values)
 }
 
+# Create a data frame with original points and smoothed values
+df <- data.frame(
+  x = x,
+  y = y,
+  my_lowess = custom_lowess(x, y, 0.2),
+  built_in_lowess = lowess(x, y, f = 0.2)$y  # Extract the smoothed y values
+)
 
-plot(custom_lowess(x, y, 0.2))
+# Plot using ggplot
+ggplot(df, aes(x = x)) +
+  geom_point(aes(y = y), color = "gray", alpha = 0.5) +  # Original data points
+  geom_line(aes(y = my_lowess, color = "Custom LOWESS"), linewidth = 1) +
+  geom_line(aes(y = built_in_lowess, color = "Built-in LOWESS"), linewidth = 1, linetype = "dashed") +
+  labs(
+    title = "Comparison of Custom and Built-in LOWESS",
+    x = "X Values",
+    y = "Smoothed Y Values",
+  ) +
+  scale_color_manual(values = c("Custom LOWESS" = "blue", "Built-in LOWESS" = "red")) +
+  theme_minimal()
 ```

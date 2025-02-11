@@ -1,5 +1,6 @@
 ---
-title: "Project_1_Statistical_computation"
+title: "Practical Day One"
+author: "Oliver Moses"
 format: html
 ---
 
@@ -10,7 +11,7 @@ format: html
 ## The rows that contain at least one NA value are as follows:
 
 ```{r}
-#| echo: false
+#| echo: true
 loop_length <- nrow(airquality)
 df_na_rows <- data.frame()
 df <- data.frame()
@@ -23,19 +24,15 @@ for (i in 1:loop_length) {
     df <- rbind(df, row_vec)
   }
 }
-print(df_na_rows)
-
-# there is a far more efficient way of doing this in one line 
-# df <- na.omit(airquality)  
-
+kable(head(df_na_rows, 10))
 ```
 
 # Question 2
 
-## The ozone and temperature metrics are as follows:
+## Ozone and temperature metrics
 
 ```{r}
-#| echo: false
+#| echo: true
 
 # Note use DF otherwise it results in some values of NA
 avg_ozone <- mean(df$Ozone)
@@ -63,7 +60,7 @@ kable(final_weather_vec, caption = "The Ozone and Temperature metrcis summarized
 # Question 3 and Question 4
 
 ```{r}
-#| echo: false
+#| echo: true
 # Dist = Y, Speed = X
 speed_df = cbind(1, cars$speed)
 dist_df = matrix(cars$dist)
@@ -74,12 +71,12 @@ beta_hat <- solve(t(speed_df) %*% speed_df) %*% t(speed_df) %*% dist_df
 
 # Calculating it using the built in R function
 cars_reg = lm(cars$dist~cars$speed)
-#print("Values using LM method")
-#print(cars_reg)
+
 
 ```
 
-The formula used for the matrix multiplication is: \begin{equation}
+The formula used for the matrix multiplication is: 
+\begin{equation}
   \hat{\beta} = (X^TX)^{-1}X^TY 
 \end{equation}
 
@@ -92,46 +89,7 @@ The values using the built in LM function are: `r cars_reg$coefficients`
 ## The specific values from my LM function are:
 
 ```{r}
-#| echo: false
-std_err_func = function(x, y, b_hat){
-  
-  residuals <- y - x %*% b_hat
-  
-  n <- length(y)
-  p <- ncol(x)  # Number of predictors including intercept
-  s <- sqrt(sum(residuals^2) / (n - p))
-
-  # Compute standard errors
-  var_beta <- s^2 * solve(t(x) %*% x)  # Variance-covariance matrix
-  se_beta <- sqrt(diag(var_beta))  # Standard errors
-
-  return (se_beta)
-}
-# std_err_func(speed_df, dist_df, beta_hat)
-
-t_stat_func <- function(estimate, std_err){
-  t_stat <- estimate/std_err
-  return (t_stat)
-}
-# t_stat_func(beta_hat, std_err_func(speed_df, dist_df, beta_hat))
-
-p_val_func <- function(t_stat){ 
-  # 2 sided since the test is if beta hat is equal to 0
-  deg_of_free = length(dist_df) - 2 # number of observations less number of parameters less 1 (n-p-1)
-  p_value <- 2 * (1 - pt(abs(t_stat), deg_of_free))
-  return (p_value)
-}
-# p_val_func(t_stat_func(beta_hat, std_err_func(speed_df, dist_df, beta_hat)))
-
-reg_df = data.frame(
-                    Estimate = beta_hat,
-                    Standard_error = std_err_func(speed_df, dist_df, beta_hat),
-                    T_stat = t_stat_func(beta_hat, std_err_func(speed_df, dist_df, beta_hat)),
-                    P_value = p_val_func(t_stat_func(beta_hat, std_err_func(speed_df, dist_df, beta_hat)))
-                    )
-# print(reg_df)
-
-
+#| echo: true
 mylm <- function(x, y){
   
   # Estimates 

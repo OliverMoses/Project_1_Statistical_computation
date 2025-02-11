@@ -1,7 +1,6 @@
 # README
 
-The purpose of this project is to
-`[briefly describe the project's goals and objectives]`
+The purpose of this project is to Produce an R markdown file that contains three practicals 
 
 ## Reproducing the analysis
 
